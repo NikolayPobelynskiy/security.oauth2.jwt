@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import security.oauth2.jwt.service.UserService;
 
 @Configuration
@@ -22,6 +23,9 @@ public class SecurityConfiguration {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    JwtAuthFilter jwtAuthFilter;
     public static final String[] ENDPOINTS_WHITELIST = {
             "/css/**",
             "/",
@@ -39,8 +43,12 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests()
-                .anyRequest().permitAll();
+                .anyRequest().permitAll()
+                .and().addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+
+        ;
 //                .requestMatchers("/**").hasRole("USER").and().formLogin();
+
         return http.build();
     }
 
