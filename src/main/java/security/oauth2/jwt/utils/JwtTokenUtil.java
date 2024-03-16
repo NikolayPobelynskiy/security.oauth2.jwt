@@ -23,7 +23,7 @@ public class JwtTokenUtil {
 
     public String generateToken(UserDetails userDetails)
     {
-        long lifeTime = 10 * 60 * 60L;
+        long lifeTime = 10 * 60 * 60 * 60L;
 
         Date isseDate = new Date();
         Date endDate = new Date(isseDate.getTime() + lifeTime);
@@ -47,6 +47,10 @@ public class JwtTokenUtil {
                 .build();
 
         Jwt<?, ?> res = jwtParser.parse(token);
+
+       // Object t = Jwts.parser().verifyWith(secretKeySpec).build().parseSignedClaims(token).getPayload();
+        System.out.println(Jwts.parser().verifyWith(secretKeySpec).build().parseSignedClaims(token).getPayload().get("sub"));
+
         System.out.println(res.getPayload());
         // List payload = (List)res.getPayload();
         // System.out.println(payload.get(0));

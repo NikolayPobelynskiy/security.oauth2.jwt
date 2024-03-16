@@ -23,7 +23,7 @@ public class UserService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Autowired
-    private RoleRepository roleRepository;
+    private RoleService roles;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,8 +44,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         user.setUsername(username);
         java.util.List<Role> roles = new ArrayList<Role>();
-
-        roles.add(roleRepository.findById(1).orElseThrow());
+        roles.add(this.roles.getUserRole());
         user.setRoles(roles);
         BCryptPasswordEncoder enc = new BCryptPasswordEncoder();
 

@@ -75,20 +75,6 @@ public class Main {
         return token;
     }
 
-
-
-
-
-
-
-    @GetMapping("/create-user")
-    public String createUser(@RequestParam(name="n") String name, @RequestParam(name="psw") String password)
-    {
-        // http://localhost:8080/create-user?n=nvonv&psw=password
-        User user = userService.addUser(name, password);
-        return user.getId().toString();
-    }
-
     @GetMapping("/add-new")
     public String addDebugItem(@RequestParam(name="n") String name) {
         Debug newItem = new Debug();
