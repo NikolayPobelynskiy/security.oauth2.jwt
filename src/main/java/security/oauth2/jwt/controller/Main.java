@@ -29,8 +29,6 @@ public class Main {
     }
     @GetMapping("/public-all")
     public String publicPage() {
-        // RoleService roleService = new RoleService();
-
         this.debugRepository.findAll().stream().forEach((k) -> {
            System.out.println(k.getId() + "->" + k.getName());
         });
@@ -58,20 +56,7 @@ public class Main {
 
         JwtTokenUtil util = new JwtTokenUtil();
         String token = util.generateToken(userDetails);
-        System.out.println(token);
 
-        return token;
-    }
-
-
-
-
-
-    @GetMapping("/parse-token")
-    public String parseToken(@RequestParam(name="token") String token)
-    {
-        JwtTokenUtil util = new JwtTokenUtil();
-        util.parseToken(token);
         return token;
     }
 
