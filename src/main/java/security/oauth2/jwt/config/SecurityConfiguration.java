@@ -4,10 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import security.oauth2.jwt.service.UserService;
 
 @Configuration
@@ -42,12 +43,22 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests()
-                .anyRequest().permitAll()
-                .and().addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(httpSecurityCorsConfigurer ->
+                        httpSecurityCorsConfigurer.configurationSource(request ->
+                                new CorsConfiguration().applyPermitDefaultValues()
+                        )
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/public/*").permitAll()
+                        .requestMatchers("/public-all-users/").fullyAuthenticated()
+                        .anyRequest().permitAll()
+                )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         ;
-//                .requestMatchers("/**").hasRole("USER").and().formLogin();
 
         return http.build();
     }
